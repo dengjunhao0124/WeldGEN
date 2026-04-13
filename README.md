@@ -6,23 +6,6 @@
 
 Official implementation of **"WeldGen: Control-Guided Stable Diffusion for Diverse Weld Image Synthesis"**, published in *The Visual Computer*.
 
-> We propose a two-stage diffusion-based data augmentation framework for weld image classification. Stage 1 fine-tunes Stable Diffusion v1.5 with DreamBooth + LoRA to learn weld-specific appearance. Stage 2 uses ControlNet with randomly sampled segmentation masks to generate structurally diverse weld images. Augmenting the training set with synthetic images improves classification accuracy from 93.3% to 99.2%.
-
----
-
-## Framework Overview
-
-```
-Stage 1 — Concept Learning
-  Raw weld images  →  DreamBooth + LoRA fine-tuning  →  Weld-aware SD model
-
-Stage 2 — Structure-Controlled Generation
-  Text prompt + Base image + Random mask  →  ControlNet (Image-to-Image)  →  Synthetic weld images
-
-Downstream Task
-  Real data + Synthetic data  →  Classifier training (GoogLeNet / MobileNetV2 / ResNet50)
-```
-
 ---
 
 ## Requirements
@@ -34,24 +17,6 @@ Downstream Task
 - Python >= 3.10
 - PyTorch with CUDA support
 
-**Python Dependencies**
-
-| Package | Description |
-|---------|-------------|
-| `torch` | Deep learning framework |
-| `torchvision` | Image transforms and utilities |
-| `diffusers` | Stable Diffusion, ControlNet, and DreamBooth pipelines |
-| `transformers` | Text encoder (CLIP) |
-| `accelerate` | Distributed training and mixed-precision (bf16) |
-| `peft` | LoRA adaptation |
-| `gradio` | Inference UI |
-| `Pillow` | Image loading and processing |
-| `numpy` | Numerical operations |
-| `tqdm` | Progress bars |
-| `datasets` | Dataset loading utilities |
-| `packaging` | Version parsing utilities |
-| `huggingface_hub` | Model and dataset hub integration |
-
 Install all dependencies:
 
 ```bash
@@ -61,36 +26,9 @@ pip install -r requirements.txt
 
 ---
 
-## Dataset
+Download the dataset from [Google Drive](https://drive.google.com/drive/folders/1olkdHOuQDYZwWHIHhifin_WLpUeKVYcXv?usp=drive_link) and place it under `data/`.
 
-The weld dataset covers **8 busbar laser welding conditions**:
-
-| Folder | Description |
-|--------|-------------|
-| `baseline` | Nominal factory settings |
-| `low power` | Laser power below nominal |
-| `low gap` | Gap < 0.5 mm between busbars |
-| `p-de` | Positive defocus |
-| `n-de` | Negative defocus |
-| `oil` | Oil-contaminated busbar surface |
-| `water` | Water-contaminated busbar surface |
-| `cold weld` | Failed fusion joint |
-
-Download the dataset from [Google Drive](https://drive.google.com/drive/folders/1olkdHOuQDYZwWHIHhifin_WLpUeKVYcXv?usp=drive_link) and place it under `data/`:
-
-```
-data/
-├── images/          # Original weld images, organized by class
-│   ├── baseline/
-│   ├── cold weld/
-│   ├── low gap/
-│   ├── low power/
-│   ├── n-de/
-│   ├── oil/
-│   ├── p-de/
-│   └── water/
-└── seg_raw/         # Binary segmentation masks for all samples
-```
+---
 
 The pre-trained Stable Diffusion v1.5 weights can be downloaded from [Hugging Face](https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-v1-5) and placed at `stable-diffusion-v1-5/`.
 
@@ -161,17 +99,6 @@ res/
 ├── i2i-dream/       # Stage 2 ControlNet results
 └── mask_to_image/   # Mask-conditioned generation results
 ```
-
----
-
-## Results
-
-| Training Data | Test Data | w-Precision (%) | w-Recall (%) | w-F1 (%) |
-|---------------|-----------|----------------|--------------|----------|
-| Real only | Real | 94.2 | 93.5 | 93.3 |
-| Synthetic only | Real | 93.0 | 91.9 | 91.6 |
-| **Synthetic + Real** | **Real** | **99.2** | **99.2** | **99.2** |
-
 ---
 
 ## Citation
