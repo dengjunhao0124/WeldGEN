@@ -60,7 +60,7 @@ from diffusers.utils.hub_utils import load_or_create_model_card, populate_model_
 from diffusers.utils.import_utils import is_xformers_available
 from diffusers.utils.torch_utils import is_compiled_module
 
-dreambooth_lora = "run/sd15-dream_lora"
+dreambooth_lora = os.environ.get("DREAMBOOTH_LORA", "run/sd15-dream_lora")
 if is_wandb_available():
     import wandb
 
@@ -1209,6 +1209,15 @@ def main(args):
             logs = {"loss": loss.detach().item(), "lr": lr_scheduler.get_last_lr()[0]}
             progress_bar.set_postfix(**logs)
             accelerator.log(logs, step=global_step)
+
+            # Append per-step loss to a CSV for offline plotting (see plot_loss.py)
+            if accelerator.sync_gradients and accelerator.is_main_process:
+                _csv = os.path.join(args.output_dir, "loss_log.csv")
+                _hdr = not os.path.exists(_csv)
+                with open(_csv, "a") as _f:
+                    if _hdr:
+                        _f.write("step,loss,lr\n")
+                    _f.write(f"{global_step},{logs['loss']:.6f},{logs['lr']:.3e}\n")
 
             if global_step >= args.max_train_steps:
                 break

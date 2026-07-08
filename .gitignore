@@ -1,0 +1,17 @@
+# data & weights are released via Google Drive / Zenodo, not git
+data/
+*.7z
+*.zip
+run/
+*.pth
+*.pt
+*.safetensors
+*.bin
+*.ckpt
+
+# python / OS junk
+__pycache__/
+*.pyc
+.DS_Store
+.idea/
+.ipynb_checkpoints/

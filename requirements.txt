@@ -1,3 +1,4 @@
+# --- generation (DreamBooth + LoRA + ControlNet, Stable Diffusion v1.5) ---
 torch
 torchvision
 diffusers
@@ -11,3 +12,13 @@ tqdm
 datasets
 packaging
 huggingface_hub
+
+# --- evaluation / reproduction ---
+scikit-learn
+statsmodels
+pandas
+matplotlib
+seaborn
+scipy
+torch-fidelity   # FID (same as the paper)
+clean-fid        # KID (same as the paper)
